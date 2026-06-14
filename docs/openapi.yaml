@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: EcoWise AI API
+  description: Carbon Footprint Tracking and AI Recommendation Engine
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+                - profileType
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+                profileType:
+                  type: string
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Validation error
+        '409':
+          description: Email already in use
+  /dashboard/stats:
+    get:
+      summary: Get user dashboard statistics
+      description: Returns aggregated carbon footprint data, comparisons, and category breakdowns.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DashboardData'
+        '401':
+          description: Unauthorized
+  /recommendations:
+    get:
+      summary: Get user recommendations
+      description: Returns a list of generated AI carbon reduction recommendations.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recommendation'
+    post:
+      summary: Generate or accept recommendations
+      description: Generates new recommendations based on user activities, or accepts an existing recommendation.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [accept]
+                recommendationId:
+                  type: string
+      responses:
+        '200':
+          description: Action completed successfully
+components:
+  schemas:
+    DashboardData:
+      type: object
+      properties:
+        totalCo2e:
+          type: number
+        monthComparison:
+          type: object
+          properties:
+            changePercentage:
+              type: number
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              totalCo2:
+                type: number
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        category:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        reasoning:
+          type: string
+        difficulty:
+          type: string
+        impact:
+          type: string
+        estimatedReduction:
+          type: number
+        confidenceScore:
+          type: number
+        accepted:
+          type: boolean
