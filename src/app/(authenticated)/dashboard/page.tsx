@@ -38,29 +38,13 @@ const ECO_TIPS = [
   "Unplugging electronics when not in use stops 'vampire' energy drain."
 ];
 
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json()).then(json => json.data);
+
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading, mutate } = useSWR<DashboardData>("/api/dashboard/stats", fetcher);
   const [tip] = useState(() => ECO_TIPS[Math.floor(Math.random() * ECO_TIPS.length)]);
-
-  const fetchDashboard = useCallback(async () => {
-    setLoading(true);
-    try { 
-      const res = await fetch("/api/dashboard/stats"); 
-      if (res.ok) { 
-        const json = await res.json(); 
-        setData(json.data); 
-      } 
-    } catch (e) { 
-      console.error(e); 
-    } finally { 
-      setLoading(false); 
-    }
-  }, []);
-
-  useEffect(() => { 
-    fetchDashboard(); 
-  }, [fetchDashboard]);
 
   const isReduction = (data?.monthComparison.changePercentage ?? 0) <= 0;
 
@@ -73,8 +57,8 @@ export default function DashboardPage() {
           <p className="text-[var(--color-text-secondary)] mt-1 text-sm">Your environmental impact at a glance</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={fetchDashboard} className="btn-secondary" aria-label="Refresh">
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" /> 
+          <button onClick={() => mutate()} className="btn-secondary" aria-label="Refresh">
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} aria-hidden="true" /> 
             Refresh
           </button>
           <Link href="/activities/new" className="btn-primary">
@@ -93,7 +77,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {loading && !data ? <DashboardSkeleton /> : (
+      {isLoading && !data ? <DashboardSkeleton /> : (
         <>
           {/* Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -130,9 +114,20 @@ export default function DashboardPage() {
             </div>
             <div className="glass-card p-6">
               <h2 className="text-lg font-semibold mb-4">Category Breakdown</h2>
-              {data?.categoryBreakdown && data.categoryBreakdown.length > 0
-                ? <CategoryPieChart data={data.categoryBreakdown.map(c => ({ name: c.category, value: c.totalCo2 }))} />
-                : <EmptyState msg="Start tracking to see your carbon breakdown." href="/activities/new" label="Log Activity" />}
+              {data?.categoryBreakdown && data.categoryBreakdown.length > 0 ? (
+                <>
+                  <CategoryPieChart data={data.categoryBreakdown.map(c => ({ name: c.category, value: c.totalCo2 }))} />
+                  <table className="sr-only">
+                    <caption>Carbon Emissions by Category</caption>
+                    <thead><tr><th scope="col">Category</th><th scope="col">CO2e (kg)</th></tr></thead>
+                    <tbody>
+                      {data.categoryBreakdown.map(c => (
+                        <tr key={c.category}><td>{c.category}</td><td>{c.totalCo2.toFixed(1)}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              ) : <EmptyState msg="Start tracking to see your carbon breakdown." href="/activities/new" label="Log Activity" />}
             </div>
           </div>
 

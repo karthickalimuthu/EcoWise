@@ -38,7 +38,9 @@
     "tailwind-merge": "^3.6.0",
     "zod": "^3.23.8",
     "ai": "^4.0.0",
-    "@ai-sdk/openai": "^1.0.0"
+    "@ai-sdk/openai": "^1.0.0",
+    "swr": "^2.2.5",
+    "@upstash/redis": "^1.28.4"
   },
   "devDependencies": {
     "@types/pg": "^8.11.6",

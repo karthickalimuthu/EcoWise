@@ -53,7 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = parsed.data;
 
         // Enforce Strict Brute Force Protection (Hardened Security Posture)
-        const rateLimitResult = checkRateLimit(`login:${email}`, AUTH_RATE_LIMIT);
+        const rateLimitResult = await checkRateLimit(`login:${email}`, AUTH_RATE_LIMIT);
         if (!rateLimitResult.allowed) {
           await createAuditLog({
             action: "SECURITY_FAILURE",

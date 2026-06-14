@@ -32,19 +32,25 @@ const PROTECTED_API_ROUTES = [
 /** Public routes that should redirect authenticated users */
 const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 
-export default async function middleware(request: NextRequest): Promise<NextResponse> {
+import { auth } from "@/auth";
+
+export default auth((request) => {
   const { pathname } = request.nextUrl;
 
   // Apply security headers to all responses
-  const response = NextResponse.next();
+  // Note: For redirects/JSON, headers should technically be appended to those specific NextResponses,
+  // but applying to a generic next() response works for standard route pass-throughs.
+  let response = NextResponse.next();
   applySecurityHeaders(response);
 
-  // Check for auth token
-  const token =
-    request.cookies.get("authjs.session-token")?.value ??
-    request.cookies.get("__Secure-authjs.session-token")?.value;
+  const isAuthenticated = !!request.auth;
+  const userRole = request.auth?.user?.role;
 
-  const isAuthenticated = !!token;
+  // RBAC Enforcement (P0)
+  if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
+    // If not admin, redirect or return 403
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
   // Protect routes — redirect unauthenticated users to login
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
@@ -57,23 +63,26 @@ export default async function middleware(request: NextRequest): Promise<NextResp
   if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL("/auth/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+    response = NextResponse.redirect(loginUrl);
+    return applySecurityHeaders(response);
   }
 
   if (isProtectedApi && !isAuthenticated) {
-    return NextResponse.json(
+    response = NextResponse.json(
       { error: { code: "AUTHENTICATION_ERROR", message: "Authentication required" } },
       { status: 401 }
     );
+    return applySecurityHeaders(response);
   }
 
   // Redirect authenticated users away from auth pages
   if (AUTH_ROUTES.includes(pathname) && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    response = NextResponse.redirect(new URL("/dashboard", request.url));
+    return applySecurityHeaders(response);
   }
 
   return response;
-}
+});
 
 export const config = {
   matcher: [

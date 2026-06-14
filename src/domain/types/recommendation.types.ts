@@ -29,6 +29,7 @@ export interface RecommendationOutput {
   readonly difficulty: Difficulty;
   readonly impact: Impact;
   readonly estimatedReduction: number;
+  readonly confidenceScore: number;
 }
 
 export interface RecommendationWithId extends RecommendationOutput {

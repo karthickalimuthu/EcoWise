@@ -16,8 +16,9 @@ import { RateLimitError } from "@/lib/errors/app-error";
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // Rate limiting
-    const ip = getClientIp(request.headers);
-    const rateCheck = checkRateLimit(`register:${ip}`, AUTH_RATE_LIMIT);
+    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    const rateCheck = await checkRateLimit(`register:${ip}`, AUTH_RATE_LIMIT);
+
     if (!rateCheck.allowed) {
       throw new RateLimitError();
     }
