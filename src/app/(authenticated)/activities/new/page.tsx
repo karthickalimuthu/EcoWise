@@ -155,11 +155,13 @@ export default function NewActivityPage() {
       {/* Step 1: Category Selection */}
       {step === 1 && (
         <div className="fade-in-up">
-          <h2 className="text-lg font-semibold mb-4">Select Category</h2>
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <h2 className="text-lg font-semibold mb-4" id="category-label">Select Category</h2>
+          <div className="grid grid-cols-2 gap-4 mb-8" role="radiogroup" aria-labelledby="category-label">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.value}
+                role="radio"
+                aria-checked={selectedCategory === cat.value}
                 onClick={() => {
                   setSelectedCategory(cat.value);
                   setForm((f) => ({ ...f, subCategory: "" }));
@@ -169,7 +171,6 @@ export default function NewActivityPage() {
                     ? `border-emerald-400 ring-1 ring-emerald-400/20 ${cat.color}`
                     : ""
                 }`}
-                aria-pressed={selectedCategory === cat.value}
               >
                 <cat.icon className={`w-8 h-8 mx-auto mb-2 ${cat.color.split(" ")[0]}`} aria-hidden="true" />
                 <span className="font-medium">{cat.label}</span>
@@ -179,20 +180,21 @@ export default function NewActivityPage() {
 
           {category && (
             <>
-              <h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3">
+              <h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3" id="subcategory-label">
                 Select Type
               </h3>
-              <div className="grid grid-cols-2 gap-3 mb-8">
+              <div className="grid grid-cols-2 gap-3 mb-8" role="radiogroup" aria-labelledby="subcategory-label">
                 {category.subCategories.map((sub) => (
                   <button
                     key={sub.value}
+                    role="radio"
+                    aria-checked={form.subCategory === sub.value}
                     onClick={() => setForm((f) => ({ ...f, subCategory: sub.value }))}
                     className={`p-3 rounded-lg border text-sm font-medium transition-all ${
                       form.subCategory === sub.value
                         ? "border-emerald-400 bg-emerald-500/10 text-emerald-400"
                         : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)]"
                     }`}
-                    aria-pressed={form.subCategory === sub.value}
                   >
                     {sub.label}
                     <span className="block text-xs opacity-60 mt-0.5">{sub.unit}</span>

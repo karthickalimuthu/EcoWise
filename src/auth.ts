@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/domain/validators";
 import { createAuditLog } from "@/lib/security/audit-logger";
+import { checkRateLimit, AUTH_RATE_LIMIT } from "@/lib/security/rate-limiter";
 
 declare module "next-auth" {
   interface User {
@@ -50,6 +51,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const { email, password } = parsed.data;
+
+        // Enforce Strict Brute Force Protection (Hardened Security Posture)
+        const rateLimitResult = checkRateLimit(`login:${email}`, AUTH_RATE_LIMIT);
+        if (!rateLimitResult.allowed) {
+          await createAuditLog({
+            action: "SECURITY_FAILURE",
+            details: `Brute force attempt blocked for email: ${email}`,
+          });
+          throw new Error("Too many login attempts. Please try again later.");
+        }
 
         const user = await prisma.user.findUnique({
           where: { email },

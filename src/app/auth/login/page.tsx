@@ -34,7 +34,7 @@ export default function LoginPage() {
             <Leaf style={{ width: 32, height: 32, color: "#34d399" }} aria-hidden="true" />
             <span className="gradient-text">EcoWise AI</span>
           </Link>
-          <p style={{ color: "#6b8f80", marginTop: "0.5rem", fontSize: "0.9375rem" }}>Welcome back! Sign in to continue.</p>
+          <p style={{ color: "#8bb09f", marginTop: "0.5rem", fontSize: "0.9375rem" }}>Welcome back! Sign in to continue.</p>
         </div>
 
         {/* Form */}
@@ -52,7 +52,7 @@ export default function LoginPage() {
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="email" className="input-label">Email Address</label>
               <div style={{ position: "relative" }}>
-                <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#6b8f80" }} aria-hidden="true" />
+                <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8bb09f" }} aria-hidden="true" />
                 <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input-field" style={{ paddingLeft: "2.5rem" }} placeholder="you@example.com" required autoComplete="email" aria-required="true" />
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function LoginPage() {
             <div style={{ marginBottom: "1.5rem" }}>
               <label htmlFor="password" className="input-label">Password</label>
               <div style={{ position: "relative" }}>
-                <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#6b8f80" }} aria-hidden="true" />
+                <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8bb09f" }} aria-hidden="true" />
                 <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-field" style={{ paddingLeft: "2.5rem" }} placeholder="Enter your password" required autoComplete="current-password" aria-required="true" />
               </div>
             </div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b8f80", marginTop: "1.5rem" }}>
+          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#8bb09f", marginTop: "1.5rem" }}>
             Don&apos;t have an account?{" "}
             <Link href="/auth/register" style={{ color: "#34d399", fontWeight: 500, textDecoration: "none" }}>Create one</Link>
           </p>

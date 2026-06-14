@@ -209,7 +209,7 @@ body {
   border-color: #34d399;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
-.input-field::placeholder { color: #6b8f80; }
+.input-field::placeholder { color: #8bb09f; }
 .input-label {
   display: block;
   margin-bottom: 0.375rem;
@@ -254,11 +254,32 @@ body {
 }
 
 /* ── Main content area ── */
-.main-content {
+.main-wrapper {
   margin-left: 260px;
+}
+
+.main-content {
   padding: 1.5rem 2rem;
-  min-height: 100vh;
-  min-height: 100dvh;
+}
+
+/* ── Mobile Header ── */
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #111916;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* ── Auth Container ── */
+.auth-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* ── Badge ── */
@@ -318,9 +339,14 @@ body {
   .sidebar.open {
     transform: translateX(0);
   }
-  .main-content {
+  .main-wrapper {
     margin-left: 0;
-    padding: 1rem;
+  }
+  .main-content {
+    padding: 1.5rem 1rem;
+  }
+  .mobile-header {
+    display: flex;
   }
   .grid-4 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }

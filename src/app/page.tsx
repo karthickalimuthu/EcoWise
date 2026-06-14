@@ -55,7 +55,7 @@ export default function LandingPage() {
           ].map((s) => (
             <div key={s.label} style={{ textAlign: "center" }}>
               <div className="gradient-text" style={{ fontSize: "1.875rem", fontWeight: 700 }}>{s.value}</div>
-              <div style={{ fontSize: "0.8125rem", color: "#6b8f80", marginTop: "0.25rem" }}>{s.label}</div>
+              <div style={{ fontSize: "0.8125rem", color: "#8bb09f", marginTop: "0.25rem" }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -128,7 +128,7 @@ export default function LandingPage() {
 
       {/* ── Footer ── */}
       <footer style={{ borderTop: "1px solid rgba(16,185,129,0.15)", padding: "1.5rem 0" }}>
-        <div className="container-main" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem", color: "#6b8f80", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div className="container-main" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem", color: "#8bb09f", flexWrap: "wrap", gap: "0.5rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Leaf style={{ width: 16, height: 16, color: "#34d399" }} aria-hidden="true" />
             <span>© 2026 EcoWise AI. All rights reserved.</span>

@@ -81,6 +81,26 @@ describe("Carbon Calculator", () => {
         })
       ).toThrow('Unknown sub-category: "spaceship"');
     });
+    it("should handle zero and negative values gracefully", () => {
+      const resultZero = calculateActivityCo2({
+        category: ActivityCategory.TRANSPORT,
+        subCategory: "car",
+        value: 0,
+        unit: "km",
+        date: new Date(),
+      });
+      expect(resultZero.co2Amount).toBe(0);
+
+      // Even if negative value is passed (which should be blocked by validation), it should process mathematically.
+      const resultNeg = calculateActivityCo2({
+        category: ActivityCategory.TRANSPORT,
+        subCategory: "car",
+        value: -10,
+        unit: "km",
+        date: new Date(),
+      });
+      expect(resultNeg.co2Amount).toBe(-2.1);
+    });
   });
 
   describe("calculateTotalCo2", () => {
@@ -94,6 +114,28 @@ describe("Carbon Calculator", () => {
 
     it("should return 0 for empty array", () => {
       expect(calculateTotalCo2([])).toBe(0);
+    });
+  });
+
+  describe("generateCarbonSummary", () => {
+    it("should correctly group and sum categories", () => {
+      const now = new Date();
+      const activities = [
+        { category: ActivityCategory.TRANSPORT, subCategory: "car", value: 100, co2Amount: 21, date: now },
+        { category: ActivityCategory.TRANSPORT, subCategory: "flight", value: 1, co2Amount: 50, date: now },
+        { category: ActivityCategory.FOOD, subCategory: "mixed", value: 7, co2Amount: 17.5, date: now },
+      ];
+
+      const { generateCarbonSummary } = require("@/domain/calculators/carbon-calculator");
+      const summary = generateCarbonSummary(activities, new Date(now.getTime() - 86400000), now);
+      
+      expect(summary.totalCo2).toBe(88.5);
+      expect(summary.byCategory.length).toBe(2);
+      
+      const transport = summary.byCategory.find((c: any) => c.category === "TRANSPORT");
+      expect(transport.totalCo2).toBe(71);
+      expect(transport.activityCount).toBe(2);
+      expect(transport.percentage).toBeCloseTo((71 / 88.5) * 100, 1);
     });
   });
 

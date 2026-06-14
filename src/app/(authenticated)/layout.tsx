@@ -1,10 +1,10 @@
 /**
  * @module app/(authenticated)/layout
  * @description Layout for all authenticated pages.
- * Wraps pages with sidebar navigation.
+ * Wraps pages with sidebar navigation and mobile header.
  */
 
-import Sidebar from "@/components/layout/sidebar";
+import AuthenticatedLayoutClient from "@/components/layout/authenticated-layout-client";
 
 export default function AuthenticatedLayout({
   children,
@@ -12,11 +12,8 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main id="main-content" className="main-content flex-1">
-        {children}
-      </main>
-    </div>
+    <AuthenticatedLayoutClient>
+      {children}
+    </AuthenticatedLayoutClient>
   );
 }

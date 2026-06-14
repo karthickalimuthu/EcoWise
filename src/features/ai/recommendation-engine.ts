@@ -176,50 +176,90 @@ const RECOMMENDATION_TEMPLATES: RecommendationTemplate[] = [
 // Engine
 // ──────────────────────────────────────────────
 
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
 /**
- * Generate personalized recommendations based on user activity data.
- * @param summary - Aggregated user activity summary
- * @param profileType - User's profile type for personalization
- * @returns Array of scored and ranked recommendations (top 5)
+ * Generate personalized recommendations using an actual LLM.
+ * Falls back to rule-based engine if OPENAI_API_KEY is missing.
  */
-export function generateRecommendations(
+export async function generateRecommendations(
   summary: UserActivitySummary,
   profileType: ProfileType
-): RecommendationOutput[] {
+): Promise<RecommendationOutput[]> {
   if (summary.totalCo2 === 0) {
     return getStarterRecommendations();
   }
 
-  // Get all applicable templates
+  // Fallback to rule-based logic if no API key is present in environment
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn("OPENAI_API_KEY is missing. Falling back to rule-based recommendations.");
+    return generateRuleBasedRecommendations(summary, profileType);
+  }
+
+  try {
+    const { object } = await generateObject({
+      model: openai("gpt-4o-mini"),
+      system: `You are an expert environmental scientist and AI carbon reduction coach.
+Your goal is to analyze the user's carbon footprint data and generate exactly 5 highly personalized, highly actionable recommendations to reduce their emissions.
+The user's profile is: ${profileType}.
+Tailor the difficulty, impact, and reasoning directly to their profile and their dominant emission category.
+Be incredibly specific in your reasoning, citing actual kg CO2e savings based on their current data.`,
+      prompt: `Here is the user's current carbon footprint summary:
+Total CO2e: ${summary.totalCo2} kg
+Dominant Category: ${summary.dominantCategory}
+Category Breakdown: ${JSON.stringify(summary.byCategory, null, 2)}
+Activities Count: ${summary.activityCount}
+
+Generate 5 personalized recommendations.`,
+      schema: z.object({
+        recommendations: z.array(
+          z.object({
+            category: z.nativeEnum(ActivityCategory),
+            title: z.string().max(100),
+            description: z.string().max(300),
+            reasoning: z.string().max(300),
+            difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+            impact: z.enum(["LOW", "MEDIUM", "HIGH"]),
+            estimatedReduction: z.number().positive(),
+          })
+        ).length(5)
+      }),
+    });
+
+    return object.recommendations;
+  } catch (error) {
+    console.error("AI Generation failed, falling back to rule-based:", error);
+    return generateRuleBasedRecommendations(summary, profileType);
+  }
+}
+
+/**
+ * Rule-based fallback engine for when AI fails or keys are missing.
+ */
+function generateRuleBasedRecommendations(
+  summary: UserActivitySummary,
+  profileType: ProfileType
+): RecommendationOutput[] {
   const candidates = RECOMMENDATION_TEMPLATES.filter((template) => {
     const categoryCo2 = summary.byCategory[template.category] ?? 0;
     return categoryCo2 > 0;
   });
 
-  // Score each candidate
   const scored = candidates.map((template) => {
     const categoryCo2 = summary.byCategory[template.category] ?? 0;
     const categoryPercentage = (categoryCo2 / summary.totalCo2) * 100;
 
-    // Base score: impact × category contribution
     const impactMultiplier = { LOW: 1, MEDIUM: 2, HIGH: 3 }[template.impact];
     const difficultyMultiplier = { EASY: 3, MEDIUM: 2, HARD: 1 }[template.difficulty];
 
     let score = impactMultiplier * difficultyMultiplier * (categoryPercentage / 100);
 
-    // Profile boost
-    if (template.profileBoost.includes(profileType)) {
-      score *= 1.3;
-    }
+    if (template.profileBoost.includes(profileType)) score *= 1.3;
+    if (template.category === summary.dominantCategory) score *= 1.5;
 
-    // Dominant category boost
-    if (template.category === summary.dominantCategory) {
-      score *= 1.5;
-    }
-
-    const estimatedReduction = roundTo2(
-      categoryCo2 * (template.baseReduction / 100)
-    );
+    const estimatedReduction = roundTo2(categoryCo2 * (template.baseReduction / 100));
 
     const reasoning = template.reasoningTemplate
       .replace("{percentage}", roundTo2(categoryPercentage).toString())
@@ -246,7 +286,6 @@ export function generateRecommendations(
     };
   });
 
-  // Sort by score (descending) and take top 5
   scored.sort((a, b) => b.score - a.score);
   return scored.slice(0, 5).map((s) => s.output);
 }

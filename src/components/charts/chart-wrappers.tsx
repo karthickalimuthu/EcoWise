@@ -105,14 +105,14 @@ export function TrendAreaChart({ data }: { data: TrendDataPoint[] }) {
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(16,185,129,0.1)" />
         <XAxis
           dataKey="date"
-          stroke="#6b8f80"
+          stroke="#8bb09f"
           fontSize={12}
           tickFormatter={(val) => {
             const d = new Date(val);
             return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
           }}
         />
-        <YAxis stroke="#6b8f80" fontSize={12} />
+        <YAxis stroke="#8bb09f" fontSize={12} />
         <Tooltip
           contentStyle={{
             backgroundColor: "#1a2420",
@@ -145,8 +145,8 @@ export function CategoryBarChart({ data }: { data: ChartDataPoint[] }) {
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(16,185,129,0.1)" />
-        <XAxis dataKey="name" stroke="#6b8f80" fontSize={12} />
-        <YAxis stroke="#6b8f80" fontSize={12} />
+        <XAxis dataKey="name" stroke="#8bb09f" fontSize={12} />
+        <YAxis stroke="#8bb09f" fontSize={12} />
         <Tooltip
           contentStyle={{
             backgroundColor: "#1a2420",

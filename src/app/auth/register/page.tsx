@@ -40,7 +40,7 @@ export default function RegisterPage() {
             <Leaf style={{ width: 32, height: 32, color: "#34d399" }} aria-hidden="true" />
             <span className="gradient-text">EcoWise AI</span>
           </Link>
-          <p style={{ color: "#6b8f80", marginTop: "0.5rem", fontSize: "0.9375rem" }}>Start your sustainability journey today.</p>
+          <p style={{ color: "#8bb09f", marginTop: "0.5rem", fontSize: "0.9375rem" }}>Start your sustainability journey today.</p>
         </div>
 
         <div className="glass-card" style={{ padding: "2rem" }}>
@@ -56,24 +56,24 @@ export default function RegisterPage() {
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="name" className="input-label">Full Name</label>
               <div style={{ position: "relative" }}>
-                <User style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#6b8f80" }} aria-hidden="true" />
+                <User style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8bb09f" }} aria-hidden="true" />
                 <input id="name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" style={{ paddingLeft: "2.5rem" }} placeholder="John Doe" required aria-required="true" />
               </div>
             </div>
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="email" className="input-label">Email Address</label>
               <div style={{ position: "relative" }}>
-                <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#6b8f80" }} aria-hidden="true" />
+                <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8bb09f" }} aria-hidden="true" />
                 <input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" style={{ paddingLeft: "2.5rem" }} placeholder="you@example.com" required autoComplete="email" aria-required="true" />
               </div>
             </div>
             <div style={{ marginBottom: "1.5rem" }}>
               <label htmlFor="password" className="input-label">Password</label>
               <div style={{ position: "relative" }}>
-                <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#6b8f80" }} aria-hidden="true" />
+                <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8bb09f" }} aria-hidden="true" />
                 <input id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" style={{ paddingLeft: "2.5rem" }} placeholder="Min 8 chars, 1 upper, 1 number" required autoComplete="new-password" aria-required="true" />
               </div>
-              <p style={{ fontSize: "0.75rem", color: "#6b8f80", marginTop: "0.25rem" }}>At least 8 characters with uppercase, lowercase, and a number.</p>
+              <p style={{ fontSize: "0.75rem", color: "#8bb09f", marginTop: "0.25rem" }}>At least 8 characters with uppercase, lowercase, and a number.</p>
             </div>
 
             <fieldset style={{ border: "none", marginBottom: "1.5rem" }}>
@@ -96,7 +96,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b8f80", marginTop: "1.5rem" }}>
+          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#8bb09f", marginTop: "1.5rem" }}>
             Already have an account?{" "}
             <Link href="/auth/login" style={{ color: "#34d399", fontWeight: 500, textDecoration: "none" }}>Sign in</Link>
           </p>
