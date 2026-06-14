@@ -22,6 +22,7 @@ export async function createRecommendations(
           difficulty: rec.difficulty,
           impact: rec.impact,
           estimatedReduction: rec.estimatedReduction,
+          confidenceScore: rec.confidenceScore,
         },
       })
     )
@@ -36,6 +37,7 @@ export async function createRecommendations(
     difficulty: r.difficulty as RecommendationWithId["difficulty"],
     impact: r.impact as RecommendationWithId["impact"],
     estimatedReduction: r.estimatedReduction,
+    confidenceScore: r.confidenceScore,
     accepted: r.accepted,
     completedAt: r.completedAt,
     createdAt: r.createdAt,
@@ -58,6 +60,7 @@ export async function findRecommendations(userId: string): Promise<Recommendatio
     difficulty: r.difficulty as RecommendationWithId["difficulty"],
     impact: r.impact as RecommendationWithId["impact"],
     estimatedReduction: r.estimatedReduction,
+    confidenceScore: r.confidenceScore,
     accepted: r.accepted,
     completedAt: r.completedAt,
     createdAt: r.createdAt,
