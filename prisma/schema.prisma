@@ -1,0 +1,126 @@
+// EcoWise AI — Prisma Schema
+// Carbon Footprint Awareness Platform
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ──────────────────────────────────────────────
+// User Model
+// ──────────────────────────────────────────────
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  role          String   @default("USER") // USER | ADMIN
+  profileType   String   @default("GENERAL") // STUDENT | PROFESSIONAL | FAMILY | ENTHUSIAST | GENERAL
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  activities      Activity[]
+  recommendations Recommendation[]
+  challenges      Challenge[]
+  auditLogs       AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+// ──────────────────────────────────────────────
+// Activity Model — Carbon-emitting activities
+// ──────────────────────────────────────────────
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  category    String   // TRANSPORT | FOOD | ENERGY | SHOPPING
+  subCategory String   // car, bus, train, bike, flight, vegetarian, mixed, high_meat, electricity, water, clothing, electronics
+  value       Float    // distance in km, days, kWh, m³, or item count
+  unit        String   // km, days, kWh, m3, items
+  co2Amount   Float    // calculated kg CO₂e
+  date        DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, date])
+  @@index([userId, category])
+  @@index([date])
+}
+
+// ──────────────────────────────────────────────
+// Recommendation Model — AI-generated suggestions
+// ──────────────────────────────────────────────
+model Recommendation {
+  id                String    @id @default(cuid())
+  userId            String
+  category          String    // TRANSPORT | FOOD | ENERGY | SHOPPING
+  title             String
+  description       String
+  reasoning         String    // Why this recommendation was generated
+  difficulty        String    // EASY | MEDIUM | HARD
+  impact            String    // LOW | MEDIUM | HIGH
+  estimatedReduction Float    // Estimated kg CO₂e reduction per month
+  accepted          Boolean   @default(false)
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, category])
+  @@index([userId, accepted])
+}
+
+// ──────────────────────────────────────────────
+// Challenge Model — Sustainability challenges
+// ──────────────────────────────────────────────
+model Challenge {
+  id              String    @id @default(cuid())
+  userId          String
+  type            String    // DAILY | WEEKLY | MONTHLY
+  title           String
+  description     String
+  category        String    // TRANSPORT | FOOD | ENERGY | SHOPPING
+  targetReduction Float     // Target kg CO₂e reduction
+  status          String    @default("ACTIVE") // ACTIVE | COMPLETED | EXPIRED
+  startDate       DateTime
+  endDate         DateTime
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, type])
+}
+
+// ──────────────────────────────────────────────
+// AuditLog Model — Security & activity auditing
+// ──────────────────────────────────────────────
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // LOGIN | LOGOUT | REGISTER | PASSWORD_RESET | ACTIVITY_CREATE | ADMIN_ACTION | SECURITY_FAILURE
+  details   String?
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}
