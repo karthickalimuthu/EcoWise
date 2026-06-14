@@ -55,7 +55,7 @@ export async function generateAndStoreRecommendations(
   };
 
   // Generate recommendations via AI engine
-  const recommendations = generateRecommendations(activitySummary, profileType);
+  const recommendations = await generateRecommendations(activitySummary, profileType);
 
   // Persist to database
   return createRecommendations(userId, recommendations);
