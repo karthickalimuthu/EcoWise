@@ -21,7 +21,7 @@ export default function AuthenticatedLayoutClient({
       />
 
       {/* Main Wrapper Area (Accounts for sidebar width on desktop) */}
-      <div className="main-wrapper flex-1 flex flex-col w-full min-h-screen">
+      <div className="main-wrapper flex-1 flex flex-col min-h-screen">
         {/* Mobile Header (hidden on desktop) */}
         <MobileHeader onOpenSidebar={() => setIsSidebarOpen(true)} />
         

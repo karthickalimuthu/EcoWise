@@ -10,50 +10,6 @@ datasource db {
   provider  = "postgresql"
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-enum ProfileType {
-  STUDENT
-  PROFESSIONAL
-  FAMILY
-  ENTHUSIAST
-  GENERAL
-}
-
-enum Category {
-  TRANSPORT
-  FOOD
-  ENERGY
-  SHOPPING
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
-
-enum Impact {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-enum ChallengeType {
-  DAILY
-  WEEKLY
-  MONTHLY
-}
-
-enum ChallengeStatus {
-  ACTIVE
-  COMPLETED
-  EXPIRED
-}
-
 // ──────────────────────────────────────────────
 // User Model
 // ──────────────────────────────────────────────
@@ -62,8 +18,8 @@ model User {
   email         String   @unique
   name          String
   passwordHash  String
-  role          Role         @default(USER)
-  profileType   ProfileType  @default(GENERAL)
+  role          String   @default("USER") // USER | ADMIN
+  profileType   String   @default("GENERAL") // STUDENT | PROFESSIONAL | FAMILY | ENTHUSIAST | GENERAL
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -82,7 +38,7 @@ model User {
 model Activity {
   id          String   @id @default(cuid())
   userId      String
-  category    Category
+  category    String   // TRANSPORT | FOOD | ENERGY | SHOPPING
   subCategory String   // car, bus, train, bike, flight, vegetarian, mixed, high_meat, electricity, water, clothing, electronics
   value       Float    // distance in km, days, kWh, m³, or item count
   unit        String   // km, days, kWh, m3, items
@@ -106,12 +62,12 @@ model Activity {
 model Recommendation {
   id                String    @id @default(cuid())
   userId            String
-  category          Category
+  category          String    // TRANSPORT | FOOD | ENERGY | SHOPPING
   title             String
   description       String
-  reasoning         String
-  difficulty        Difficulty
-  impact            Impact
+  reasoning         String    // Why this recommendation was generated
+  difficulty        String    // EASY | MEDIUM | HARD
+  impact            String    // LOW | MEDIUM | HIGH
   estimatedReduction Float    // Estimated kg CO₂e reduction per month
   confidenceScore   Float     @default(80) // AI confidence score
   accepted          Boolean   @default(false)
@@ -132,12 +88,12 @@ model Recommendation {
 model Challenge {
   id              String    @id @default(cuid())
   userId          String
-  type            ChallengeType
+  type            String    // DAILY | WEEKLY | MONTHLY
   title           String
   description     String
-  category        Category
-  targetReduction Float
-  status          ChallengeStatus @default(ACTIVE)
+  category        String    // TRANSPORT | FOOD | ENERGY | SHOPPING
+  targetReduction Float     // Target kg CO₂e reduction
+  status          String    @default("ACTIVE") // ACTIVE | COMPLETED | EXPIRED
   startDate       DateTime
   endDate         DateTime
   completedAt     DateTime?
